@@ -1,0 +1,62 @@
+Taxa,Code,Circumference,AMR,HPA,Mass,Wet_weight,Density
+Acropora sarmentosa,A001,10.9,1.735,9.455,57.3,32.2,2.283
+Acropora sarmentosa,A002,17.2,2.737,23.542,78.4,43.3,2.234
+Acropora sarmentosa,A003,24,3.82,45.837,80.2,45,2.278
+Acropora sarmentosa,A004,27.6,4.393,60.619,138.4,77.1,2.258
+Acropora sarmentosa,A005,26.4,4.202,55.462,143.4,79,2.227
+Acropora sarmentosa,A006,29.2,4.647,67.851,148.1,81.2,2.214
+Acropora sarmentosa,A007,24.4,3.883,47.377,149.2,81.5,2.204
+Acropora sarmentosa,A008,25.8,4.106,52.97,154.8,84.9,2.215
+Acropora sarmentosa,A009,23.6,3.756,44.321,158,86,2.194
+Acropora sarmentosa,A010,23.6,3.756,44.321,180.2,99.1,2.222
+Acropora sarmentosa,A011,27,4.297,58.012,182.1,101,2.245
+Acropora sarmentosa,A012,30.2,4.806,72.578,290.3,160,2.228
+Acropora sarmentosa,A013,27.8,4.425,61.501,292.3,163,2.261
+Acropora sarmentosa,A014,38.4,6.112,117.342,342.5,191.5,2.268
+Acropora sarmentosa,A015,30,4.775,71.62,357.4,201.6,2.294
+Acropora sarmentosa,A016,48.6,7.735,187.959,644.4,359.5,2.262
+Acropora sarmentosa,A017,40.8,6.494,132.468,1277.7,702.5,2.221
+Pocillopora cf. meandrina,B001,24.2,3.852,46.604,188.2,94.9,2.017
+Pocillopora cf. meandrina,B002,31.2,4.966,77.464,230.1,116.3,2.022
+Pocillopora cf. meandrina,B003,32,5.093,81.487,230.9,115,1.992
+Pocillopora cf. meandrina,B004,36.8,5.857,107.767,285.6,143.7,2.013
+Pocillopora cf. meandrina,B005,39,6.207,121.037,286.9,152.7,2.138
+Pocillopora cf. meandrina,B006,34,5.411,91.992,386.6,197.1,2.04
+Pocillopora cf. meandrina,B007,36.8,5.857,107.767,462.9,238.2,2.06
+Pocillopora cf. meandrina,B008,36.2,5.761,104.282,464.9,233.5,2.009
+Pocillopora cf. meandrina,B009,31.1,4.95,76.968,505.9,260.2,2.059
+Pocillopora cf. meandrina,B010,52,8.276,215.177,1084.7,561.6,2.074
+Pocillopora cf. meandrina,B011,49.4,7.862,194.198,1091,572.5,2.104
+Pocillopora cf. meandrina,B012,58.2,9.263,269.548,1413.6,734.2,2.081
+Pocillopora cf. meandrina,B013,62.2,9.899,307.873,1689.3,877.8,2.082
+Pocillopora cf. meandrina,B014,76.4,12.159,464.491,1761.9,892.3,2.026
+Pocillopora cf. meandrina,B015,61.6,9.804,301.961,2498.8,1289.9,2.067
+Pocillopora cf. meandrina,B016,80.6,12.828,516.964,3301.5,1690.7,2.05
+massive Porites,C001,14,2.228,15.597,39.5,18.7,1.899
+massive Porites,C002,12.8,2.037,13.038,46.9,21.4,1.839
+massive Porites,C003,14.8,2.355,17.431,78.9,36.6,1.865
+massive Porites,C004,16.8,2.674,22.46,79.8,37.6,1.891
+massive Porites,C005,25,3.979,49.736,281.6,124.5,1.792
+massive Porites,C006,22.6,3.597,40.645,285.6,133.3,1.875
+massive Porites,C007,25.8,4.106,52.97,305.3,135.3,1.796
+massive Porites,C008,24.4,3.883,47.377,317.2,139.9,1.789
+massive Porites,C009,33.4,5.316,88.773,606.3,278.8,1.851
+massive Porites,C010,38.2,6.08,116.123,698.8,318.2,1.836
+massive Porites,C011,34.8,5.539,96.372,819.9,385.9,1.889
+massive Porites,C012,45.2,7.194,162.58,1685.3,754.2,1.81
+massive Porites,C013,43.6,6.939,151.274,1874.3,893.9,1.912
+massive Porites,C014,58.4,9.295,271.404,4119.2,1933.5,1.885
+massive Porites,C015,85.2,13.56,577.656,8248.5,3889,1.892
+Goniastrea cf. retiformis,D001,11.8,1.878,11.08,31.6,16.5,1.963
+Goniastrea cf. retiformis,D002,22,3.501,38.515,124.5,60.1,1.933
+Goniastrea cf. retiformis,D003,19.4,3.088,29.95,126,59.2,1.886
+Goniastrea cf. retiformis,D004,23.4,3.724,43.573,204.6,96.5,1.893
+Goniastrea cf. retiformis,D005,23.2,3.692,42.832,215.4,104.1,1.935
+Goniastrea cf. retiformis,D006,24.4,3.883,47.377,220.9,104.2,1.893
+Goniastrea cf. retiformis,D007,22.4,3.565,39.929,286.3,136.1,1.906
+Goniastrea cf. retiformis,D008,27.6,4.393,60.619,533.9,256.9,1.927
+Goniastrea cf. retiformis,D009,35.2,5.602,98.6,1038.5,495,1.911
+Goniastrea cf. retiformis,D010,42.2,6.716,141.715,1325.9,640.9,1.936
+Goniastrea cf. retiformis,D011,45.8,7.289,166.925,1611.8,779.8,1.937
+Goniastrea cf. retiformis,D012,44.8,7.13,159.715,1680.2,795.8,1.9
+Goniastrea cf. retiformis,D013,45,7.162,161.144,2147.8,1015.1,1.896
