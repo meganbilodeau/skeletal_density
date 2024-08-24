@@ -1,0 +1,383 @@
+---
+title: "Assignment1_notes"
+output:
+  pdf_document: default
+  html_document: default
+date: "2024-08-07"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2) 
+library(ggpubr)
+library(lattice)
+library(rstatix)
+library(MASS)
+library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(reshape2)
+library(knitr)
+library(car)
+
+Coral_data <- read.csv("Coral.csv", header = T)
+```
+
+
+
+# Plotting the Data
+
+Plotting the data on coral _Density_ and _Colony Size_
+
+```{r}
+ggplot(Coral_data) +
+  aes(x = Taxa, y = Density, color = Taxa) +
+  geom_jitter() +
+  theme_classic() +
+  theme(legend.position = "none") 
+```
+
+```{r}
+ggplot(data = Coral_data, aes(x = AMR, y = Density, color = Taxa)) +
+  geom_point(size = 2.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_classic() 
+```
+  Graph shows the trendlines for each taxa comparing size (AMR) and density 
+  
+```{r}
+ggplot(Coral_data) +
+  aes(x = Taxa, y = Density, color = Taxa) +
+  geom_boxplot() +
+  theme_classic() +
+  theme(legend.position = "none") 
+```
+# Testing the Data
+
+## Outliers
+
+```{r}
+Coral_data %>% group_by(Taxa) %>% identify_outliers(Density)
+```
+No outliers found 
+
+## Normality 
+
+```{r}
+model <- lm(Density ~ Taxa, data = Coral_data)
+ggqqplot(residuals(model))
+shapiro.test(model$residuals)
+hist(model$residuals)
+```
+## Homogeneity of variance
+
+```{r}
+dotplot(Density ~ Taxa, data = Coral_data) 
+plot(model, 1)
+Coral_data %>% levene_test(Density ~ Taxa)
+
+```
+No evident relationships between residuals & fitted values; can assume homogeneity of variances
+
+# Data analysis: ANOVA and post-hoc analysis
+
+Looking at how coral data density is distributed 
+
+```{r}
+Model1<-aov(Density ~ Taxa/AMR, data=Coral_data)
+summary(Model1)
+
+```
+Since data look reasonably good; ANOVA (Analysis of Variance) may be a suitable option to compare skeletal density among coral taxa, accounting for colony size.
+
+summary statistic for model (skeletal density varies among taxa, but size (within taxa) has no effect
+post-hoc analysis (comparing Density for pairwise Taxa comparisons)
+
+
+```{r}
+TukeyHSD(aov(Density ~ Taxa, data = Coral_data))
+
+```
+significant differences (all pairwise comparisons)
+
+# Figure for Report 
+
+Now that we have established that skeletal density (Density) varies among coral taxa (Taxa), but not with colony size (AMR) within these taxa, we can create a graph showing these results for the report. You can choose to modify the R code below (boxplot) or make your own independent figure to visualise your results for the report.
+
+```{r}
+Coral_data$Taxa = with(Coral_data, reorder(Taxa, -Density, median))  
+mylabels <- c(expression(paste(italic("A. sarmentosa"))),
+              expression(paste(italic("P."), " cf. ", italic("meandrina"))),
+              expression(paste(italic("G."), " cf. ", italic("retiformis"))),
+              expression(paste("massive ", italic("Porites"))))
+ggplot(Coral_data, aes(x=Taxa, y=Density, fill = Taxa)) +
+geom_boxplot() +
+geom_point(position = position_jitter(width = 0.28), alpha = 0.4, shape = 19, size =  1.5, color = "black") +
+theme_classic() +
+theme(legend.position = "none") +
+scale_fill_manual(values =  c("gold", "orchid1", "lightgreen", "steelblue1")) +
+stat_summary(fun = "mean", geom = "point", shape = 21, size = 4, color = "black", fill = c("goldenrod4", "orchid4", "palegreen4", "steelblue4"))  +
+scale_x_discrete(labels = mylabels) +
+labs(x = "", y = "Skeletal density (g/cm3)") +
+theme(axis.title = element_text(size = 12, family = "sans", face = "plain", color = "black"), 
+ axis.text.y = element_text(size = 12, family = "sans", color = "black"),
+ axis.text.x = element_text(size = 11, family = "sans", face = "plain", color = "black"))
+
+
+```
+
+This graph illustrates the differences in skeletal density among coral taxa. Make sure you understand what each component of the plot shows (boxes, whiskers, raw data points etc.), as the figure you include in your practical report will require a complete figure caption
+
+```{r}
+Coral_data$Taxa = with(Coral_data, reorder(Taxa, -Density, median))  
+mylabels <- c(expression(paste(italic("A. sarmentosa"))),
+              expression(paste(italic("P."), " cf. ", italic("meandrina"))),
+              expression(paste(italic("G."), " cf. ", italic("retiformis"))),
+              expression(paste("massive ", italic("Porites"))))
+ggplot(Coral_data, aes(x=Taxa, y=Density, fill = Taxa)) +
+geom_violin() +
+geom_point(position = position_jitter(width = 0.28), alpha = 0.4, shape = 19, size =  1.5, color = "black") +
+theme_classic() +
+theme(legend.position = "none") +
+scale_fill_manual(values =  c("gold", "orchid1", "lightgreen", "steelblue1")) +
+stat_summary(fun = "mean", geom = "point", shape = 21, size = 4, color = "black", fill = c("goldenrod4", "orchid4", "palegreen4", "steelblue4"))  +
+scale_x_discrete(labels = mylabels) +
+labs(x = "", y = "Skeletal density (g/cm3)") +
+theme(axis.title = element_text(size = 12, family = "sans", face = "plain", color = "black"), 
+ axis.text.y = element_text(size = 12, family = "sans", color = "black"),
+ axis.text.x = element_text(size = 11, family = "sans", face = "plain", color = "black"))
+
+```
+Starting with the morphology - add column for morphology type 
+```{r}
+coral <- Coral_data %>%
+  mutate(Morphology = case_when(
+    Taxa == "Acropora sarmentosa" ~ "Branching",
+    Taxa == "massive Porites" ~ "Massive",
+    Taxa == "Pocillopora cf. meandrina" ~ "Branching",
+    Taxa == "Goniastrea cf. retiformis" ~ "Massive",
+    TRUE ~ "Unknown"  # Default case
+  ))
+
+```
+
+Run an ANOVA on the Morphology 
+
+## Outliers
+
+```{r}
+coral %>% group_by(Morphology) %>% identify_outliers(Density)
+```
+No outliers found 
+
+## Normality 
+
+```{r}
+model <- lm(Density ~ Morphology, data = coral)
+ggqqplot(residuals(model))
+shapiro.test(model$residuals)
+hist(model$residuals)
+```
+## Homogeneity of variance
+
+```{r}
+dotplot(Density ~ Morphology, data = coral) 
+plot(model, 1)
+coral %>% levene_test(Density ~ Morphology)
+
+```
+No evident relationships between residuals & fitted values; can assume homogeneity of variances
+
+# Data analysis: ANOVA and post-hoc analysis
+
+Looking at how coral data density is distributed 
+
+```{r}
+Model1<-aov(Density ~ Morphology/AMR, data = coral)
+summary(Model1)
+
+```
+# Megan's Plots
+
+Starting with the morphology - add column for morphology type 
+```{r}
+coral <- Coral_data %>%
+  mutate(Morphology = case_when(
+    Taxa == "Acropora sarmentosa" ~ "Branching",
+    Taxa == "massive Porites" ~ "Massive",
+    Taxa == "Pocillopora cf. meandrina" ~ "Branching",
+    Taxa == "Goniastrea cf. retiformis" ~ "Massive",
+    TRUE ~ "Unknown"  # Default case
+  ))
+
+```
+
+Starting with the morphology - change so colour is the morphology of the taxa 
+```{r}
+coral$Taxa = with(coral, reorder(Taxa, -Density, median))  
+mylabels <- c(expression(paste(italic("A. sarmentosa"))),
+              expression(paste(italic("P."), " cf. ", italic("meandrina"))),
+              expression(paste(italic("G."), " cf. ", italic("retiformis"))),
+              expression(paste("massive ", italic("Porites"))))
+ggplot(coral, aes(x=Taxa, y=Density, fill = Morphology)) +
+  geom_boxplot() +
+  geom_point(position = position_jitter(width = 0.28), alpha = 0.4, shape = 19, size =  1.5, color = "black") +
+  theme_classic() +
+  scale_fill_manual(values =  c("steelblue", "lightgreen")) +
+  stat_summary(fun = "mean", geom = "point", shape = 21, size = 4, color = "black", fill = c("steelblue4","steelblue4", "palegreen4", "palegreen4"))  +
+  scale_x_discrete(labels = mylabels) +
+  labs(x = "Coral Taxa", 
+       y = expression(Skeletal~density~(g/cm^3))) +
+  theme(axis.title = element_text(size = 12, family = "sans", face = "plain", color = "black"), 
+        axis.text.y = element_text(size = 12, family = "sans", color = "black"),
+        axis.text.x = element_text(size = 11, family = "sans", face = "plain", color = "black"))
+
+```
+
+Add size variation as a figure to show high variation in size between same taxa. despite there being low variaiton in skeletal density within taxa (add anova to show no significant variaition between size and taxa)
+
+```{r}
+coral$Taxa = with(coral, reorder(Taxa, -AMR, median))  
+mylabels <- c(expression(paste(italic("A. sarmentosa"))),
+              expression(paste(italic("P."), " cf. ", italic("meandrina"))),
+              expression(paste(italic("G."), " cf. ", italic("retiformis"))),
+              expression(paste("massive ", italic("Porites"))))
+ggplot(coral, aes(x=Taxa, y=AMR, fill = Morphology)) +
+  geom_violin() +
+  geom_point(position = position_jitter(width = 0.28), alpha = 0.4, shape = 19, size =  1.5, color = "black") +
+  theme_classic() +
+  scale_fill_manual(values =  c("lightblue", "lightgreen")) +
+  stat_summary(fun = "mean", geom = "point", shape = 21, size = 4, color = "black", fill = c("steelblue","steelblue", "palegreen4", "palegreen4"))  +
+  scale_x_discrete(labels = mylabels) +
+  labs(x = "", 
+       y = expression(Skeletal~AMR~(g/cm^3))) +
+  theme(axis.title = element_text(size = 12, family = "sans", face = "plain", color = "black"), 
+        axis.text.y = element_text(size = 12, family = "sans", color = "black"),
+        axis.text.x = element_text(size = 11, family = "sans", face = "plain", color = "black"))
+```
+```{r}
+Coral_data$Taxa = with(Coral_data, reorder(Taxa, -AMR, median))  
+mylabels <- c(expression(paste(italic("A. sarmentosa"))),
+              expression(paste(italic("P."), " cf. ", italic("meandrina"))),
+              expression(paste(italic("G."), " cf. ", italic("retiformis"))),
+              expression(paste("massive ", italic("Porites"))))
+
+ggplot(Coral_data, aes(x=Taxa, y=AMR, fill = Taxa)) +
+  geom_boxplot() +
+  geom_point(position = position_jitter(width = 0.28), alpha = 0.4, shape = 19, size =  1.5, color = "black") +
+  theme_classic() +
+  theme(legend.position = "none") +
+  scale_fill_manual(values =  c("gold", "orchid1", "lightgreen", "steelblue1")) +
+  stat_summary(fun = "mean", geom = "point", shape = 21, size = 4, color = "black", fill = c("goldenrod4", "orchid4", "palegreen4", "steelblue4"))  +
+  scale_x_discrete(labels = mylabels) +
+  labs(x = "", y = "Arithmetic Mean Radius (cm)") +
+  theme(axis.title = element_text(size = 12, family = "sans", face = "plain", color = "black"), 
+        axis.text.y = element_text(size = 12, family = "sans", color = "black"),
+        axis.text.x = element_text(size = 11, family = "sans", face = "plain", color = "black"))
+
+```
+```{r}
+# Set the levels of Taxa in the desired order
+coral$Taxa <- factor(coral$Taxa, levels = c("Acropora sarmentosa", "Pocillopora cf. meandrina", "Goniastrea cf. retiformis", "massive Porites"))
+
+mylabels <- c(expression(paste(italic("A. sarmentosa"))),
+              expression(paste(italic("P."), " cf. ", italic("meandrina"))),
+              expression(paste(italic("G."), " cf. ", italic("retiformis"))),
+              expression(paste("massive ", italic("Porites"))))
+
+ggplot(coral, aes(x=Taxa, y=AMR, fill = Taxa)) +
+  geom_boxplot() +
+  geom_point(position = position_jitter(width = 0.28), alpha = 0.4, shape = 19, size = 1.5, color = "black") +
+  theme_classic() +
+  theme(legend.position = "none") +
+  scale_fill_manual(values = c("lightblue", "steelblue", "lightgreen", "green2")) +
+  stat_summary(fun = "mean", geom = "point", shape = 21, size = 4, color = "black", fill = c("steelblue4", "steelblue4", "palegreen4", "palegreen4"))  +
+  scale_x_discrete(labels = mylabels) +
+  labs(x = "Coral Taxa", y = "Arithmetic Mean Radius (cm)") +
+  theme(axis.title = element_text(size = 12, family = "sans", face = "plain", color = "black"),
+        axis.text.y = element_text(size = 12, family = "sans", color = "black"),
+        axis.text.x = element_text(size = 11, family = "sans", face = "plain", color = "black"))
+```
+```{r}
+coral$Taxa <- factor(coral$Taxa, levels = c("Acropora sarmentosa", "Pocillopora cf. meandrina", "Goniastrea cf. retiformis", "massive Porites"))
+
+#coral$Taxa = with(coral, reorder(Taxa, -AMR, median))  
+mylabels <- c(expression(paste(italic("A. sarmentosa"))),
+              expression(paste(italic("P."), " cf. ", italic("meandrina"))),
+              expression(paste(italic("G."), " cf. ", italic("retiformis"))),
+              expression(paste("massive ", italic("Porites"))))
+ggplot(coral, aes(x=Taxa, y=AMR, fill = Morphology)) +
+  geom_boxplot() +
+  geom_point(position = position_jitter(width = 0.28), alpha = 0.4, shape = 19, size =  1.5, color = "black") +
+  theme_classic() +
+  scale_fill_manual(values =  c("steelblue", "lightgreen")) +
+  stat_summary(fun = "mean", geom = "point", shape = 21, size = 4, color = "black", fill = c("steelblue4","steelblue4", "palegreen4", "palegreen4"))  +
+  scale_x_discrete(labels = mylabels) +
+  labs(x = "Coral Taxa", 
+       y = "Arithmetic Mean Radius (cm)") +
+  theme(axis.title = element_text(size = 12, family = "sans", face = "plain", color = "black"), 
+        axis.text.y = element_text(size = 12, family = "sans", color = "black"),
+        axis.text.x = element_text(size = 11, family = "sans", face = "plain", color = "black"))
+
+```
+
+```{r}
+Summary_size <- coral %>%
+  group_by(Taxa) %>%
+  summarise(
+     AMR_min = min(AMR, na.rm = TRUE),
+    AMR_max = max(AMR, na.rm = TRUE)
+  )
+print(Summary_size)
+
+```
+
+mean values for skeletal density 
+
+```{r}
+summary_stats <- coral %>%
+  group_by(Taxa) %>%
+  summarise(
+    mean_density = mean(Density, na.rm = TRUE),
+    se_density = sd(Density, na.rm = TRUE) / sqrt(n())
+  )
+
+print(summary_stats)
+```
+
+Anova for the size varitaion within and between taxa 
+
+```{r}
+Modelsize<-aov(AMR ~ Taxa, data = coral)
+summary(Modelsize)
+```
+
+Summarize average size for the taxa 
+
+```{r}
+summarize_av_size <- coral %>% 
+  group_by(Taxa) %>%
+  summarise(
+    mean_size = mean(AMR, na.rm = TRUE)
+)
+print(summarize_av_size)
+```
+
+Running script to output ANOVA table for the results 
+
+```{r}
+library(kableExtra)
+Model1<-aov(Density ~ Taxa/AMR, data=Coral_data)
+summary(Model1)
+
+anova_table <- summary(Model1)[[1]]
+anova_table
+
+kable(anova_table, caption = "ANOVA Table for Treatment Effect on Response",
+      col.names = c("Df", "Sum Sq", "Mean Sq", "F value", "Pr(>F)")) %>%
+  kable_styling(full_width = F, position = "center") %>%
+  add_header_above(c(" " = 1, "ANOVA" = 5)) %>%
+  column_spec(1, bold = TRUE) %>%
+  row_spec(0, bold = TRUE) %>%
+  kable_classic(full_width = F, html_font = "Cambria")
+```
